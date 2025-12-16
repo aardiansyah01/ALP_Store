@@ -1,32 +1,63 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-use App\Http\Controllers\ProductController;
+/* AUTH */
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::prefix('products')
-    ->controller(ProductController::class)
-    ->group(function () {
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
-        // List Produk
-        Route::get('/', 'index')->name('products.index');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        // Form create
-        Route::get('/create', 'create')->name('products.create');
+/* CUSTOMER */
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
-        // Store
-        Route::post('/store', 'store')->name('products.store');
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'store'])->name('cart.add');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+});
 
-        // Edit form
-        Route::get('/edit/{id}', 'edit')->name('products.edit');
+Route::patch('/cart/{id}/toggle', [CartController::class, 'toggle'])
+    ->name('cart.toggle');
 
-        // Update
-        Route::put('/update/{id}', 'update')->name('products.update');
+Route::patch('/cart/{id}/quantity', [CartController::class, 'updateQuantity'])
+    ->name('cart.updateQuantity');
 
-        // Detail
-        Route::get('/show/{id}', 'show')->name('products.show');
-    });
+Route::put('/cart/{id}/size', [CartController::class, 'updateSize'])
+    ->name('cart.updateSize');
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])
+        ->name('checkout.index');
+
+    Route::post('/checkout/store', [CheckoutController::class, 'store'])
+        ->name('checkout.store');
+
+    Route::get('/orders', [\App\Http\Controllers\OrderController::class, 'index'])
+        ->name('orders.index');
+});
+
+/* ADMIN */
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+});
+
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+
+

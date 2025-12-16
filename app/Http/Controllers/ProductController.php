@@ -18,7 +18,12 @@ class ProductController extends Controller
 
         $products = Product::query();
 
-        // Price Range Filter
+        // SEARCH
+        if ($search) {
+            $products->where('name', 'like', '%' . $search . '%');
+        }
+
+        // FILTER RANGE HARGA
         if ($min_price !== null) {
             $products->where('price', '>=', $min_price);
         }
@@ -30,9 +35,17 @@ class ProductController extends Controller
         // Sorting
         $products->orderBy($sort, $order);
 
-        $products = $products->get();
+        // PAGINATION
+        $products = $products->paginate(28)->withQueryString();
 
-        return view('products.list', compact('products', 'search', 'sort', 'order', 'min_price', 'max_price'));
+        return view('products.list', compact(
+            'products',
+            'search',
+            'sort',
+            'order',
+            'min_price',
+            'max_price'
+        ));
     }
 
     public function show($id)
@@ -54,9 +67,11 @@ class ProductController extends Controller
             'price'       => 'required|numeric',
             'description' => 'nullable|string',
             'color'       => 'required|string',
-            'size'        => 'required|string',
             'category_id' => 'required',
             'image'       => 'nullable|string',
+            'stock'       => 'required|integer|min:0',
+            'location'    => 'nullable|string',
+            'sizes'       => 'nullable|array',
         ]);
 
         Product::create($validated);
@@ -80,9 +95,11 @@ class ProductController extends Controller
             'price'       => 'required|numeric',
             'description' => 'nullable|string',
             'color'       => 'required|string',
-            'size'        => 'required|string',
             'category_id' => 'required',
             'image'       => 'nullable|string',
+            'stock'       => 'required|integer|min:0',
+            'location'    => 'nullable|string',
+            'sizes'       => 'nullable|array',
         ]);
 
         $product = Product::findOrFail($id);

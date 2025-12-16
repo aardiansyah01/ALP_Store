@@ -36,10 +36,38 @@
                value="{{ old('color', $product->color ?? '') }}" required>
     </div>
 
+    @php
+    $sizes = ['S','M','L','XL','XXL'];
+    $selectedSizes = old('sizes', $product->sizes ?? []);
+    @endphp
+
     <div class="mb-3">
         <label class="form-label">Ukuran</label>
-        <input type="text" name="size" class="form-control"
-               value="{{ old('size', $product->size ?? '') }}" required>
+        <div class="d-flex gap-3 flex-wrap">
+            @foreach($sizes as $size)
+                <div class="form-check">
+                    <input class="form-check-input"
+                        type="checkbox"
+                        name="sizes[]"
+                        value="{{ $size }}"
+                        {{ in_array($size, $selectedSizes) ? 'checked' : '' }}>
+                    <label class="form-check-label">{{ $size }}</label>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Stock</label>
+        <input type="number" name="stock" class="form-control"
+            value="{{ old('stock', $product->stock ?? 0) }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Lokasi</label>
+        <input type="text" name="location" class="form-control"
+            value="{{ old('location', $product->location ?? '') }}"
+            placeholder="Gudang / Rak / Toko">
     </div>
 
     {{-- DROPDOWN KATEGORI --}}
