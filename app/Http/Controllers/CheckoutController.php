@@ -34,6 +34,8 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'receiver_name'    => 'required|string|max:100',
+            'email'            => 'required|email',
+            'phone'            => 'required|string|max:20',
             'address'          => 'required|string',
             'city'             => 'required|string',
             'village'          => 'required|string',
@@ -82,6 +84,8 @@ class CheckoutController extends Controller
                 $order = Order::create([
                     'user_id'          => $userId,
                     'receiver_name'    => $request->receiver_name,
+                    'email'            => $request->email,
+                    'phone'            => $request->phone,
                     'address'          => $request->address,
                     'city'             => $request->city,
                     'village'          => $request->village,
@@ -103,7 +107,7 @@ class CheckoutController extends Controller
                         'size'       => $item->size,
                         'qty'        => $item->quantity,
                         'price'      => $item->product->price,
-                        'subtotal'   => $item->product->price * $item->quantity, // 🔥 WAJIB
+                        'subtotal'   => $item->product->price * $item->quantity,
                     ]);
                 }
 

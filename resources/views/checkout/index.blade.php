@@ -18,6 +18,18 @@
                     <input type="text" name="receiver_name" class="form-control" required>
                 </div>
 
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Nomor Telepon</label>
+                        <input type="text" name="phone" class="form-control" required>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label>Alamat Lengkap</label>
                     <textarea name="address" class="form-control" rows="3" required
@@ -125,6 +137,10 @@
                         Rp {{ number_format($subtotal + 15000) }}
                     </strong>
                 </h4>
+                <a href="{{ route('products.index') }}"
+                    class="btn btn-md btn-secondary mt-3">
+                    Batal
+                </a>
                 <button class="btn btn-danger btn-lg mt-3">
                     Buat Pesanan
                 </button>

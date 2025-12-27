@@ -43,4 +43,10 @@
     @endforelse
 
 </div>
+<div>
+ <a href="{{ route('products.index') }}"
+    class="btn btn-secondary">
+    Back
+ </a>   
+</div>
 @endsection

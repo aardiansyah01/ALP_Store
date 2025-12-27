@@ -153,7 +153,11 @@
                     @foreach ($cartItems->where('is_selected', true) as $item)
                         <input type="hidden" name="cart_ids[]" value="{{ $item->id }}">
                     @endforeach
-
+                    <a href="{{ route('products.index') }}"
+                       class="btn btn-secondary">
+                        Back
+                    </a>
+                    
                     <button type="submit" class="btn btn-primary">
                         Checkout
                     </button>

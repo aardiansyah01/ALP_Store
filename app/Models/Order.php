@@ -9,6 +9,8 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'receiver_name',
+        'email',
+        'phone',
         'address',
         'city',
         'village',
