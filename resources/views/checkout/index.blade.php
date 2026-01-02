@@ -103,16 +103,8 @@
 
         <div class="card mb-4">
             <div class="card-body">
-                <h5>Jasa Pengiriman</h5>
-
-                <select name="shipping_cost" id="shipping_cost" class="form-select" required>
-                    <option value="15000" data-service="ALP Express">ALP Express - Rp 15.000</option>
-                    <option value="20000" data-service="J&T Singular">J&T Singular - Rp 20.000</option>
-                    <option value="30000" data-service="SPX Some Day">SPX Some Day - Rp 30.000</option>
-                </select>
-
-                <input type="hidden" name="shipping_service" id="shipping_service" value="ALP Express">
-
+                <h5>Pengiriman</h5>
+                @livewire('princing-check')
             </div>
         </div>
         
@@ -121,27 +113,42 @@
                 <h5>Metode Pembayaran</h5>
 
                 <select name="payment_method" class="form-select" required>
-                    <option value="bca">BCA</option>
-                    <option value="bri">BRI</option>
-                    <option value="cod">COD</option>
+                    <option value="bca">BCA (Bank Central Asia)</option>
+                    <option value="bri">BRI (Bank Republik Indonesia)</option>
+                    <option value="cod">COD (Cash On Delivery)</option>
+                    <option value="Paypall">Paypall</option>
+                    <option value="Dana">Dana</option>
                 </select>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-body text-end">
-                <p>Subtotal Produk: <strong>Rp {{ number_format($subtotal) }}</strong></p>
-                <p>Ongkir: <strong id="ongkir-text">Rp 15.000</strong></p>
-                <h4>Total Bayar:
-                    <strong id="total-text">
-                        Rp {{ number_format($subtotal + 15000) }}
-                    </strong>
-                </h4>
-                <a href="{{ route('products.index') }}"
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3">Ringkasan Pembayaran</h6>
+
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal Produk</span>
+                    <strong>Rp {{ number_format($subtotal) }}</strong>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <span>Ongkir</span>
+                    <strong id="ongkir-text">Rp 0</strong>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between fs-5">
+                    <strong>Total Bayar</strong>
+                    <strong id="total-text">Rp {{ number_format($subtotal) }}</strong>
+                </div>
+
+                <a href="{{ route('cart.index') }}"
                     class="btn btn-md btn-secondary mt-3">
                     Batal
                 </a>
-                <button class="btn btn-danger btn-lg mt-3">
+                
+                <button class="btn btn-danger btn-md mt-3">
                     Buat Pesanan
                 </button>
             </div>
@@ -154,24 +161,20 @@
 </div>
 
 <script>
-    const shippingSelect = document.getElementById('shipping_cost');
     const ongkirText = document.getElementById('ongkir-text');
     const totalText = document.getElementById('total-text');
-
+    const totalInput = document.getElementById('total-input');
     const subtotal = {{ $subtotal }};
 
-    shippingSelect.addEventListener('change', function () {
-        const ongkir = parseInt(this.value);
-
-        ongkirText.innerText = 'Rp ' + ongkir.toLocaleString('id-ID');
-        totalText.innerText = 'Rp ' + (subtotal + ongkir).toLocaleString('id-ID');
-    });
-
-    document.getElementById('shipping_cost').addEventListener('change', function () {
-        const service = this.options[this.selectedIndex].dataset.service;
-        document.getElementById('shipping_service').value = service;
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('shippingSelected', ({ cost }) => {
+            ongkirText.innerText = 'Rp ' + cost.toLocaleString('id-ID');
+            totalText.innerText = 'Rp ' + (subtotal + cost).toLocaleString('id-ID');
+            totalInput.value = subtotal + cost;
+        });
     });
 </script>
+
 @endsection
 
 

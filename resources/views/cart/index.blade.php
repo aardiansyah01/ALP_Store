@@ -11,6 +11,11 @@
         <div class="alert alert-warning">
             Keranjang belanja masih kosong
         </div>
+
+        <a href="{{ route('products.index') }}"
+            class="btn btn-secondary">
+                Back
+        </a>
     @else
         <form>
 

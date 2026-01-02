@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,6 +51,20 @@ Route::middleware('auth')->group(function () {
         ->name('orders.index');
 });
 
+Route::middleware('auth')->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])
+        ->name('orders.index');
+
+    Route::post('/orders/{order}/complete', [OrderController::class, 'complete'])
+        ->name('orders.complete');
+
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+        ->name('orders.cancel');
+
+    Route::post('/orders/{order}/buy-again', [OrderController::class, 'buyAgain'])
+        ->name('orders.buyAgain');
+});
+
 /* ADMIN */
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
@@ -60,4 +75,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/orders', [AdminOrderController::class, 'index'])
+        ->name('admin.orders.index');
 
+    Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
+        ->name('admin.orders.updateStatus');
+});

@@ -12,6 +12,7 @@ class ProductController extends Controller
         $search = $request->input('search');
         $sort   = $request->input('sort', 'name');
         $order  = $request->input('order', 'asc');
+        $category = $request->input('category');
 
         $min_price = $request->input('min_price');
         $max_price = $request->input('max_price');
@@ -23,6 +24,13 @@ class ProductController extends Controller
             $products->where('name', 'like', '%' . $search . '%');
         }
 
+        // FILTER CATEGORY
+        if ($category) {
+            $products->whereHas('category', function ($q) use ($category) {
+                $q->where('name', $category);
+            });
+        }
+
         // FILTER RANGE HARGA
         if ($min_price !== null) {
             $products->where('price', '>=', $min_price);
@@ -32,7 +40,7 @@ class ProductController extends Controller
             $products->where('price', '<=', $max_price);
         }
 
-        // Sorting
+        // SORTING
         $products->orderBy($sort, $order);
 
         // PAGINATION
@@ -43,6 +51,7 @@ class ProductController extends Controller
             'search',
             'sort',
             'order',
+            'category',
             'min_price',
             'max_price'
         ));

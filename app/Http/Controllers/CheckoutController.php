@@ -72,6 +72,8 @@ class CheckoutController extends Controller
         //Total
         $total = $subtotal + $shippingCost;
 
+        try {
+
             DB::transaction(function () use (
                 $request,
                 $userId,
@@ -101,20 +103,39 @@ class CheckoutController extends Controller
                 ]);
 
                 foreach ($cartItems as $item) {
+
+                    // 🔒 LOCK row product (anti stok minus)
+                    $product = \App\Models\Product::where('id', $item->product_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    // ❌ cek stok cukup atau tidak
+                    if ($product->stock < $item->quantity) {
+                        throw new \Exception(
+                            "Stok produk {$product->name} tidak mencukupi"
+                        );
+                    }
+
+                    // ⬇️ kurangi stok
+                    $product->decrement('stock', $item->quantity);
+
+                    // 🧾 simpan order item
                     OrderItem::create([
                         'order_id'   => $order->id,
                         'product_id' => $item->product_id,
                         'size'       => $item->size,
                         'qty'        => $item->quantity,
-                        'price'      => $item->product->price,
-                        'subtotal'   => $item->product->price * $item->quantity,
+                        'price'      => $product->price,
+                        'subtotal'   => $product->price * $item->quantity,
                     ]);
                 }
-
                 // hapus cart setelah checkout
                 Cart::whereIn('id', $cartItems->pluck('id'))->delete();
             });
-
+        } catch (\Exception $e) {
+            return redirect()->route('cart.index')
+                ->with('error', $e->getMessage());
+        }
         return redirect()->route('products.index')
             ->with('success', 'Pesanan berhasil dibuat');
     }
