@@ -135,7 +135,7 @@ class CartController extends Controller
             ->first();
 
         if ($existing) {
-            // Gabungkan qty
+            // Gabung qty
             $existing->increment('quantity', $cart->quantity);
             $cart->delete();
         } else {

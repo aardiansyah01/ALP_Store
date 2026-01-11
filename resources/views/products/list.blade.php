@@ -50,7 +50,6 @@
         padding: 5px 1px;
     }
 
-    /* Kecilkan tombol di card */
     .btn-sm-custom {
         padding: 7px 35px;
         font-size: 13px;
@@ -67,7 +66,7 @@
     }
 
     .btn-edit{
-        margin : 0 1rem 0 -0.8rem;
+        margin : 0 0.7rem 0 -0.9rem;
     }
 
     /* Kecilkan pagination */
@@ -105,6 +104,12 @@
     .alp-topbar a {
         margin-right: 15px;
         color: #000;
+    }
+
+    .alp-header .alp-topbar .alp-left-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .right-auth {
@@ -321,152 +326,222 @@
         align-items: center;
         font-size: 1.5rem;
     }
-    
+
+    /* Dropodwn bahasa */
+    .lang-dropdown {
+        position: relative;
+    }
+
+    .lang-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font: inherit;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .lang-menu {
+        position: absolute;
+        top: 120%;
+        left: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        min-width: 140px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        display: none;
+        z-index: 999;
+    }
+
+    .lang-menu a {
+        display: block;
+        padding: 8px 12px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .lang-menu a:hover {
+        background: #f5f5f5;
+    }
+
+    /* hp */
+    @media (max-width: 767px) {
+
+        .alp-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            font-size: 12px;
+            gap: 10px;
+        }
+
+        /* bahasa + notif */
+        .alp-left-icon {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* welcome + logout */
+        .right-auth {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .welcome-text {
+            font-size: 11px;
+        }
+
+        .logout-form button {
+            font-size: 11px;
+            padding: 2px 6px;
+        }
+
+        /* badge notif */
+        .alp-topbar .badge {
+            font-size: 9px;
+            padding: 2px 4px;
+        }
+
+        .alp-navbar {
+            flex-wrap: wrap;
+            gap: 14px;
+            padding: 14px 16px;
+        }
+
+        .alp-logo {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alp-logo a {
+            font-size: 22px;
+        }
+
+        .category-tabs {
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 20px;
+            padding-bottom: 6px;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* SEARCH + ICONS */
+        .alp-filter {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alp-search {
+            flex: 1;
+        }
+
+        .alp-search input {
+            width: 100%;
+        }
+
+        .alp-icons {
+            gap: 14px;
+            font-size: 18px;
+        }
+    }
+
+    /* Tablet */
+    @media (min-width: 768px) and (max-width: 1023px) {
+
+        .alp-navbar {
+            gap: 22px;
+        }
+
+        /* CATEGORY */
+        .category-tabs {
+            gap: 30px;
+            margin-right: 20px;
+        }
+
+        .alp-search input {
+            width: 90px;
+            padding-left: 6px;
+            font-size: 9px;
+        }
+
+        .alp-search input::placeholder {
+            content: 'Cari';
+        }
+
+        .alp-search button {
+            padding: 0 10px;
+        }
+
+        .alp-icons {
+            gap: 14px;
+        }
+    }
 </style>
-
-{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> --}}
-
-{{-- <div class="alp-header mb-4">
-
-    {{-- TOP BAR --}}
-    {{-- <div class="top-bar d-flex justify-content-between align-items-center px-4">
-        <div class="top-left">
-            {{-- <a href="#"><h6>Home | </h6></a> --}}
-            {{-- @auth
-                @if (auth()->user()->role === 'admin')
-                    <a href="{{ route('orders.index') }}" title="Pesanan Saya">
-                        <i data-feather="package"></i>
-                    </a>
-                @else
-                    <a href="{{ route('orders.index') }}" title="Pesanan Saya">
-                        <i data-feather="package"></i>
-                    </a>
-                @endif
-            @endauth
-        </div> --}}
-
-        {{-- <div class="top-right">
-            @auth
-            <div class="welcome">
-                <h6>Welcome, {{ Auth::user()->name }} |</h6>
-                <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button class="btn-logout"> Logout</button>
-                </form>
-            </div>
-            @else
-                <a href="{{ route('login') }}">Login</a> |
-                <a href="{{ route('register') }}">Daftar</a>
-            @endauth
-        </div>
-    </div> --}}
-
-    {{-- MAIN BAR --}}
-    {{-- <div class="main-bar d-flex align-items-center px-4 py-3">
-        {{-- <div class="bag-icon text-white fs-4">
-            <i data-feather="shopping-bag"> </i>
-        </div> --}}
-        {{-- <div class="logo me-4">ALP STORE</div> --}}
-
-        {{-- SEARCH --}}
-        {{-- <form method="GET" class="search-box d-flex flex-grow-1 me-4">
-            <input type="text" name="search" class="form-control"
-                placeholder="Cari di ALP STORE" value="{{ $search }}">
-            <button class="btn btn-light">
-                <i data-feather="search"> </i>
-            </button> --}}
-        {{-- </form> --}}
-
-        {{-- CART ICON --}}
-        {{-- <div class="cart-icon text-white fs-4">
-            <a href="{{ route('cart.index') }}" class="cart-icon position-relative">
-                <i data-feather="shopping-cart"> </i>
-            </a>
-        </div>
-    </div> --}}
-
-    {{-- FILTER BAR --}}
-    {{-- <div class="filter-bar d-flex justify-content-between align-items-center px-4 py-3">
-        <div class="">
-            @auth
-                @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('products.create') }}" class="btn btn-success btn-sm">
-                        + Tambah Produk
-                    </a>
-                @endif
-            @endauth --}}
-
-            {{-- FILTER HARGA --}}
-            {{-- <button class="btn btn-primary btn-sm me-2" data-bs-toggle="collapse" data-bs-target="#filterRange">
-                Filter Harga
-            </button>
-        </div> --}}
-
-        {{-- <div class="d-flex align-items-center"> --}}
-
-            {{-- SORTING --}}
-            {{-- <form method="GET" class="d-flex">
-                <input type="hidden" name="min_price" value="{{ $min_price }}">
-                <input type="hidden" name="max_price" value="{{ $max_price }}">
-                <input type="hidden" name="search" value="{{ $search }}">
-
-                <select name="sort" class="form-select form-select-sm me-2">
-                    <option value="name" {{ $sort == 'name' ? 'selected' : '' }}>Nama</option>
-                    <option value="price" {{ $sort == 'price' ? 'selected' : '' }}>Harga</option>
-                </select>
-
-                <select name="order" class="form-select form-select-sm me-2">
-                    <option value="asc" {{ $order == 'asc' ? 'selected' : '' }}>A → Z / Murah</option>
-                    <option value="desc" {{ $order == 'desc' ? 'selected' : '' }}>Z → A / Mahal</option>
-                </select> --}}
-
-                {{-- <button class="btn btn-dark btn-sm">Urutkan</button>
-            </form> --}}
-            {{-- PAGINATION --}}
-            {{-- @if ($products->hasPages())
-            <div class="d-flex align-items-center pagination-top ms-2">
-                <span class="me-2">
-                    {{ $products->currentPage() }}/{{ $products->lastPage() }}
-                </span>
-
-                <a href="{{ $products->previousPageUrl() ?? '#' }}"
-                class="btn btn-light btn-sm me-1 {{ $products->onFirstPage() ? 'disabled' : '' }}">
-                    ‹
-                </a> --}}
-
-                {{-- <a href="{{ $products->nextPageUrl() ?? '#' }}"
-                class="btn btn-light btn-sm {{ !$products->hasMorePages() ? 'disabled' : '' }}">
-                    ›
-                </a>
-            </div>
-            @endif
-        </div>
-    </div> --}}
-{{-- </div>--}}
 
 <header class="alp-header">
     {{-- TOP BAR --}}
     <div class="alp-topbar">
-        <div class="left-links">
-            <a href="#">
-                <i data-feather="globe"></i>
-                Bahasa
-            </a>
+        <div class="alp-left-icon">
+            {{-- bahasa --}}
+            <div class="left-links lang-dropdown">
+                <button class="lang-toggle" id="langToggle">
+                    <i data-feather="globe"></i>
+                    {{ __('ui.language') }}
+                </button>
+
+                <div class="lang-menu" id="langMenu">
+                    <a href="/lang/id">🇮🇩 Indonesia</a>
+                    <a href="/lang/en">🇺🇸 English</a>
+                </div>
+            </div>
+            {{-- notification --}}
+            <div class="position-relative">
+                <a href="{{ route('notifications.index') }}" class="notification">
+                    <i data-feather="bell"></i>
+
+                    @auth
+                        @php
+                            $unread = auth()->user()->unreadNotifications()->count();
+                        @endphp
+
+                        @if($unread > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle
+                                        badge rounded-pill bg-danger">
+                                {{ $unread }}
+                            </span>
+                        @endif
+                    @endauth
+                </a>
+            </div>
         </div>
 
         <div class="right-auth">
             @auth
                 <span class="welcome-text">
-                    Welcome, {{ Auth::user()->name }}
+                    {{ __('ui.welcome') }}, {{ Auth::user()->name }}
                 </span>
 
                 <form action="{{ route('logout') }}" method="POST" class="logout-form">
                     @csrf
-                    <button type="submit">Logout</button>
+                    <button type="submit">{{ __('ui.logout') }}</button>
                 </form>
             @else
-                <a href="{{ route('login') }}">Login</a>
-                <a href="{{ route('register') }}">Register</a>
+                <a href="{{ route('login') }}">{{ __('ui.login') }}</a>
+                <a href="{{ route('register') }}">{{ __('ui.register') }}</a>
             @endauth
         </div>
     </div>
@@ -479,7 +554,7 @@
             @auth
                 @if(Auth::user()->role === 'admin')
                     <a href="{{ route('products.create') }}" class="btn-add btn btn-success btn-sm">
-                        + Tambah Produk
+                        {{ __('ui.add_product') }}
                     </a>
                 @endif
             @endauth
@@ -493,29 +568,29 @@
         <nav class="category-tabs">
             <a class="{{ !$currentCategory ? 'active' : '' }}"
             href="{{ route('products.index', request()->except('category','page')) }}">
-                Semua
+                {{ __('ui.all') }}
             </a>
 
             <a class="{{ $currentCategory == 'jaket' ? 'active' : '' }}"
             href="{{ route('products.index', array_merge(request()->except('page'), ['category' => 'jaket'])) }}">
-                Jaket
+                {{ __('ui.jacket') }}
             </a>
 
             <a class="{{ $currentCategory == 'baju' ? 'active' : '' }}"
             href="{{ route('products.index', array_merge(request()->except('page'), ['category' => 'baju'])) }}">
-                Baju
+                {{ __('ui.shirt') }}
             </a>
 
             <a class="{{ $currentCategory == 'celana' ? 'active' : '' }}"
             href="{{ route('products.index', array_merge(request()->except('page'), ['category' => 'celana'])) }}">
-                Celana
+                {{ __('ui.pants') }}
             </a>
         </nav>
 
         {{-- SEARCH --}}
         <div class="alp-filter">
             <form action="{{ route('products.index') }}" method="GET" class="alp-search">
-                <input type="text" name="search" placeholder="Cari di ALP STORE"
+                <input type="text" name="search" placeholder="{{ __('ui.search') }}"
                     value="{{ request('search') }}">
                 <button type="submit">
                     <i data-feather="search"></i>
@@ -546,89 +621,55 @@
     </div>
 </header>
 
-
-{{-- FILTER RANGE --}}
-{{-- <div class="container_top">
-    <div id="filterRange" class="collapse mb-4">
-        <div class="card card-body">
-            <form method="GET" class="row g-3">
-
-                <input type="hidden" name="sort" value="{{ $sort }}">
-                <input type="hidden" name="order" value="{{ $order }}">
-                <input type="hidden" name="search" value="{{ $search }}">
-
-                <div class="col-md-4">
-                    <label class="form-label">Harga Minimum</label>
-                    <input type="number" name="min_price" class="form-control form-control-sm"
-                        value="{{ $min_price }}">
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Harga Maksimum</label>
-                    <input type="number" name="max_price" class="form-control form-control-sm"
-                        value="{{ $max_price }}">
-                </div>
-
-                <div class="col-md-4 d-flex align-items-end">
-                    <button class="btn btn-primary btn-sm w-100">
-                        Terapkan Filter
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div> --}}
-{{-- SIDEBAR FILTER --}}
 <div id="filterOverlay"></div>
 
 <div id="filterSidebar">
     <div class="filter-header">
-        <h3>Filter & Urutkan</h3>
+        <h3>{{ __('ui.filter') }}</h3>
         <button id="closeFilter">✕</button>
     </div>
 
     <form method="GET" action="{{ route('products.index') }}">
-        {{-- PERTAHANKAN SEARCH & CATEGORY --}}
         <input type="hidden" name="search" value="{{ request('search') }}">
         <input type="hidden" name="category" value="{{ request('category') }}">
 
         {{-- SORT --}}
         <div class="filter-group">
-            <h4>Urutkan Berdasarkan</h4>
+            <h4>{{ __('ui.sort_by') }}</h4>
 
             <label>
                 <input type="radio" name="sort" value="name"
                     {{ request('sort') === 'name' ? 'checked' : '' }}>
-                Nama
+                {{ __('ui.filter_name') }}
             </label>
 
             <label>
                 <input type="radio" name="sort" value="price"
                     {{ request('sort') === 'price' ? 'checked' : '' }}>
-                Harga
+                {{ __('ui.filter_price') }}
             </label>
         </div>
 
         {{-- ORDER --}}
         <div class="filter-group">
-            <h4>Urutan</h4>
+            <h4>{{ __('ui.sort') }}</h4>
 
             <label>
                 <input type="radio" name="order" value="asc"
                     {{ request('order') === 'asc' ? 'checked' : '' }}>
-                A–Z / Murah → Mahal
+                {{ __('ui.a-z') }}
             </label>
 
             <label>
                 <input type="radio" name="order" value="desc"
                     {{ request('order') === 'desc' ? 'checked' : '' }}>
-                Z–A / Mahal → Murah
+                {{ __('ui.z-a') }}
             </label>
         </div>
 
-        {{-- PRICE RANGE --}}
+        {{-- RANGE HARGA --}}
         <div class="filter-group">
-            <h4>Harga</h4>
+            <h4>{{ __('ui.price') }}</h4>
 
             <input type="number" name="min_price" placeholder="Min"
                 value="{{ request('min_price') }}">
@@ -638,7 +679,7 @@
         </div>
 
         <button type="submit" class="apply-filter">
-            Terapkan Filter →
+            {{ __('ui.filter_true') }}
         </button>
     </form>
 </div>
@@ -681,20 +722,20 @@
 
                     <small class="text-muted">
                         @if($p->category_id == 1)
-                            Baju
+                            {{ __('ui.shirt') }}
                         @elseif($p->category_id == 2)
-                            Celana
+                            {{ __('ui.pants') }}
                         @elseif($p->category_id == 3)
-                            Jaket
+                            {{ __('ui.jacket') }}
                         @endif
                     </small>
 
-                    <small class="text-muted">
-                        Stock : {{ $p->stock }}
-                    </small>
+                    {{-- <small class="text-muted">
+                        {{ __('ui.stock') }} : {{ $p->stock }}
+                    </small> --}}
 
                     <strong class="text-success mt-1 mb-2">
-                        Rp : {{ number_format($p->price, 0, ',', '.') }}
+                        Rp {{ number_format($p->price, 0, ',', '.') }}
                     </strong>
 
                     <div class="mt-auto card-button">
@@ -703,7 +744,7 @@
                         @if(Auth::user()->role === 'admin')
                         <a href="{{ route('products.edit', $p->id) }}"
                             class="btn btn-edit btn-warning btn-sm-custom w-50">
-                            Edit 
+                            {{ __('ui.edit') }}
                         </a>
                         @else
                         <form action="{{ route('cart.add') }}" method="POST">
@@ -727,7 +768,7 @@
                         
                         <a href="{{ route('products.show', $p->id) }}"
                         class="btn btn-outline-secondary btn-sm-custom">
-                            Detail
+                            {{ __('ui.detail') }}
                         </a>
                     </div>
                 </div>
@@ -736,7 +777,7 @@
     @empty
         <div class="col-12">
             <div class="alert alert-warning text-center">
-                Produk tidak ditemukan
+                {{ __('ui.product_not_found') }}
             </div>
         </div>
     @endforelse
@@ -747,7 +788,7 @@
     @if ($products->hasPages())
         <div class="alp-pagination d-flex align-items-center pagination-top ms-2">
             <div>
-                <h6>Lanjut Ke Halaman Sebelah</h6>
+                <h6>{{ __('ui.pagination_text') }}</h6>
             </div>
             <div>
                 <span class="me-2">
@@ -787,6 +828,19 @@
     overlay.addEventListener('click', () => {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
+    });
+
+    // Dropdown bahasa
+    document.addEventListener('click', function (e) {
+        const toggle = document.getElementById('langToggle');
+        const menu = document.getElementById('langMenu');
+
+        if (toggle.contains(e.target)) {
+            menu.style.display =
+                menu.style.display === 'block' ? 'none' : 'block';
+        } else {
+            menu.style.display = 'none';
+        }
     });
 </script>
 @endsection

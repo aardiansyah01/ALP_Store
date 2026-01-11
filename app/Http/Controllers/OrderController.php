@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderCancelledMail;
+use App\Models\ProductStock;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Cart;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Notifications\OrderCancelledNotification;
+use App\Models\User;
 
 class OrderController extends Controller
 {
@@ -15,23 +20,30 @@ class OrderController extends Controller
     {
         $tab = $request->get('tab', 'proses');
 
-        $query = Order::with(['items.product'])
+        $query = Order::with(['items.product', 'return'])
             ->where('user_id', Auth::id());
 
-        if ($tab === 'selesai') {
-            $query->where('status', 'completed');
-        } elseif ($tab === 'dibatalkan') {
-            $query->where('status', 'cancelled');
-        } else {
-            $query->whereIn('status', ['pending', 'shipped', 'delivered']);
-        }
+        match ($tab) {
+            'proses' => $query->where('status', 'pending'),
+
+            'dikirim' => $query->whereIn('status', [
+                'shipped',
+                'delivered'
+            ]),
+
+            'selesai' => $query->where('status', 'completed'),
+
+            'dibatalkan' => $query->where('status', 'cancelled'),
+
+            'dikembalikan' => $query->where('status', 'returned'),
+        };
 
         $orders = $query->latest()->get();
 
         return view('orders.index', compact('orders', 'tab'));
     }
 
-    // user klik "Selesai"
+    // if klik Selesai
     public function complete(Order $order)
     {
         $this->authorizeOrder($order);
@@ -49,38 +61,58 @@ class OrderController extends Controller
         ->with('success', 'Pesanan berhasil diselesaikan');
     }
 
-    // user klik "Batalkan"
+    // if klik Batalkan
     public function cancel(Order $order)
     {
-        // ❌ cegah double cancel
+  
         if ($order->status === 'cancelled') {
             return back()->with('error', 'Pesanan sudah dibatalkan');
         }
 
         DB::transaction(function () use ($order) {
 
-            // 🔁 kembalikan stok
+            // return stock
             foreach ($order->items as $item) {
 
-                $product = Product::where('id', $item->product_id)
+                $stock = ProductStock::where('product_id', $item->product_id)
+                    ->where('size', $item->size)
                     ->lockForUpdate()
                     ->first();
 
-                if ($product) {
-                    $product->increment('stock', $item->qty);
+                if ($stock) {
+                    $stock->increment('stock', $item->qty);
                 }
             }
 
-            // ❌ update status order
             $order->update([
                 'status' => 'cancelled'
             ]);
         });
 
+        // email
+        Mail::to($order->email)->send(new OrderCancelledMail($order));
+
+        // notif
+        $order->user->notify(
+            new OrderCancelledNotification(
+                isAdmin: false,
+                orderId: $order->id
+            )
+        );
+
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new OrderCancelledNotification(
+                isAdmin: true,
+                orderId: $order->id
+            ));
+        }
+
         return back()->with('success', 'Pesanan berhasil dibatalkan & stok dikembalikan');
     }
 
-    // beli lagi (tambah qty)
+    // beli lagi = +qty
     public function buyAgain(Order $order)
     {
         $this->authorizeOrder($order);
@@ -95,7 +127,7 @@ class OrderController extends Controller
                 ],
                 [
                     'quantity' => 0,
-                    'price' => $item->product->price, // ✅ WAJIB
+                    'price' => $item->product->price,
                 ]
             );
 

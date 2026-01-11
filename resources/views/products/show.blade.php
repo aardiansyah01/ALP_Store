@@ -40,27 +40,27 @@
             <div class="col-md-7">
                 <h2 class="mb-3">{{ $product->name }}</h2>
 
-                <p><strong>Color:</strong> {{ $product->color }}</p>
+                <p><strong>{{ __('ui.colour') }} :</strong> {{ $product->color }}</p>
 
                 {{-- SIZE DROPDOWN --}}
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Size</label>
+                    <label class="form-label fw-bold">{{ __('ui.size') }}</label>
                     <select name="size" class="form-select" required>
-                        @if(is_array($product->sizes))
-                            @foreach($product->sizes as $size)
-                                <option value="{{ $size }}">{{ $size }}</option>
-                            @endforeach
-                        @else
-                            <option value="">Ukuran tidak tersedia</option>
-                        @endif
+                        @foreach($product->stocks as $stock)
+                            <option value="{{ $stock->size }}"
+                                {{ $stock->stock == 0 ? 'disabled' : '' }}>
+                                {{ $stock->size }}
+                                {{ $stock->stock == 0 ? '(Habis)' : '(Stok: '.$stock->stock.')' }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
                 {{-- STOCK --}}
-                <p><strong>Stock:</strong> {{ $product->stock }}</p>
+                {{-- <p><strong>Stock:</strong> {{ $product->stock }}</p> --}}
 
                 {{-- LOKASI --}}
-                <p><strong>Lokasi:</strong> {{ $product->location }}</p>
+                <p><strong>{{ __('ui.location') }}:</strong> {{ $product->location }}</p>
 
                 {{-- PRICE --}}
                 <h3 class="text-success mb-3">
@@ -76,35 +76,38 @@
                     {{-- BACK --}}
                     <a href="{{ route('products.index') }}"
                        class="btn btn-secondary">
-                        Back
+                        {{ __('ui.back') }}
                     </a>
 
-                    {{-- ADMIN --}}
+                    {{-- Admin --}}
                     @auth
                         @if(Auth::user()->role === 'admin')
                             <a href="{{ route('products.edit', $product->id) }}"
                                class="btn btn-warning">
-                                Edit Product
+                                {{ __('ui.edit') }}
                             </a>
 
-                        {{-- USER LOGIN --}}
+                        {{-- user login --}}
                         @else
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                                <button type="submit" class="btn btn-primary">
-                                    + Keranjang
+                                <button type="submit" class="btn btn-outline-warning btn-cart-custom">
+                                    <i data-feather="shopping-cart"></i>
+                                    +
                                 </button>
                             </form>
                         @endif
 
-                    {{-- BELUM LOGIN --}}
+                    {{-- belum login --}}
                     @else
-                        <a href="{{ route('login') }}"
-                           class="btn btn-primary">
-                            Login untuk + Keranjang
-                        </a>
+                        <button type="submit" class="btn btn-outline-danger btn-cart-custom">
+                            <a href="{{ route('login') }}">
+                                <i data-feather="shopping-cart"></i>
+                                +
+                            </a>
+                        </button>
                     @endauth
 
                 </div>

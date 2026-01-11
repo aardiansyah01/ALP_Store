@@ -3,18 +3,171 @@
 @section('title', 'Keranjang Belanja')
 
 @section('content')
+
+<style>
+    @media (max-width: 480px) {
+
+        .table {
+            font-size: 13px;
+        }
+
+        .table-responsive,
+        table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tbody tr {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        tbody td {
+            width: 100%;
+        }
+
+        tbody td img {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cart-checkbox {
+            transform: scale(1.1);
+        }
+        
+        tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #555;
+        }
+
+        .btn-sm {
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .text-end {
+            text-align: left !important;
+        }
+
+        .cart-summary,
+        .container > hr + .d-flex {
+            background: #f8f9fa;
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+
+        .container h5.text-success {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .text-end form {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .text-end form a,
+        .text-end form button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .cart-item,
+        tbody tr {
+            padding: 14px 0;
+        }
+
+        tbody td {
+            padding: 10px 6px !important;
+            vertical-align: middle;
+        }
+
+        tbody select.form-select {
+            width: 100% !important;
+            min-height: 38px;
+            font-size: 14px;
+            padding: 6px 10px;
+            line-height: 1.4;
+            background-color: #fff;
+        }
+
+        tbody select option {
+            font-size: 14px;
+        }
+
+        tbody td strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        tbody td:not(:last-child) {
+            margin-bottom: 6px;
+        }
+
+        tbody td .d-flex {
+            gap: 8px !important;
+        }
+
+        tbody td form button.btn-danger {
+            margin-top: 6px;
+        }
+
+        .cart-size-select,
+        .cart-size-select option,
+        select.form-select {
+            font-size: 14px !important;
+            color: #000 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+        }
+
+        select.form-select {
+            -webkit-appearance: menulist !important;
+            appearance: menulist !important;
+            background-color: #fff !important;
+        }
+
+        .cart-size-select {
+            min-width: 70px !important;
+            padding: 6px 28px 6px 10px !important;
+        }
+
+        select.form-select {
+            background-image: none !important;
+        }
+    }
+</style>
+
 <div class="container mt-4">
 
-    <h4 class="mb-3">Keranjang Belanja</h4>
+    <h4 class="mb-3">{{ __('ui.cart') }}</h4>
 
     @if($cartItems->count() === 0)
         <div class="alert alert-warning">
-            Keranjang belanja masih kosong
+            {{ __('ui.cart_empty') }}
         </div>
 
         <a href="{{ route('products.index') }}"
             class="btn btn-secondary">
-                Back
+                {{ __('ui.back') }}
         </a>
     @else
         <form>
@@ -25,13 +178,13 @@
                         <th width="50">
                             <input type="checkbox" disabled>
                         </th>
-                        <th>Gambar</th>
-                        <th>Produk</th>
-                        <th>Ukuran</th>
-                        <th width="120">Harga</th>
-                        <th width="80">Jumlah</th>
-                        <th width="120">Subtotal</th>
-                        <th width="80">Aksi</th>
+                        <th>{{ __('ui.img') }}</th>
+                        <th>{{ __('ui.product') }}</th>
+                        <th>{{ __('ui.size') }}</th>
+                        <th width="120">{{ __('ui.price') }}</th>
+                        <th width="80">{{ __('ui.quantity') }}</th>
+                        <th width="120">{{ __('ui.subtotal') }}</th>
+                        <th width="80">{{ __('ui.action') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,7 +223,7 @@
                                     @method('PUT')
 
                                     <select name="size"
-                                            class="form-select form-select-sm w-50"
+                                            class="form-select form-select-sm w-50 cart-size-select"
                                             onchange="this.form.submit()">
                                         @foreach($item->product->sizes as $size)
                                             <option value="{{ $size }}"
@@ -124,7 +277,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-sm">
-                                    Hapus
+                                    {{ __('ui.delete') }}
                                 </button>
                             </form>
                         </td>
@@ -138,7 +291,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <strong>
-                        Total ({{ $cartItems->count() }} produk)
+                        Total ({{ $cartItems->count() }} {{ __('ui.product') }})
                     </strong>
                 </div>
 
@@ -160,11 +313,11 @@
                     @endforeach
                     <a href="{{ route('products.index') }}"
                        class="btn btn-secondary">
-                        Back
+                        {{ __('ui.back') }}
                     </a>
                     
                     <button type="submit" class="btn btn-primary">
-                        Checkout
+                        {{ __('ui.checkout') }}
                     </button>
                 </form>
             </div>

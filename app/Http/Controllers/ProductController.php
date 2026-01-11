@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Notifications\NewProductNotification;
 
 class ProductController extends Controller
 {
@@ -19,19 +21,19 @@ class ProductController extends Controller
 
         $products = Product::query();
 
-        // SEARCH
+        // Search
         if ($search) {
             $products->where('name', 'like', '%' . $search . '%');
         }
 
-        // FILTER CATEGORY
+        // Filter category
         if ($category) {
             $products->whereHas('category', function ($q) use ($category) {
                 $q->where('name', $category);
             });
         }
 
-        // FILTER RANGE HARGA
+        // Filter range harga
         if ($min_price !== null) {
             $products->where('price', '>=', $min_price);
         }
@@ -40,11 +42,11 @@ class ProductController extends Controller
             $products->where('price', '<=', $max_price);
         }
 
-        // SORTING
+        // sort
         $products->orderBy($sort, $order);
 
-        // PAGINATION
-        $products = $products->paginate(28)->withQueryString();
+        // Pagination 25
+        $products = $products->paginate(25)->withQueryString();
 
         return view('products.list', compact(
             'products',
@@ -66,6 +68,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories = \App\Models\Category::pluck('name', 'id');
+        
         return view('products.form', compact('categories'));
     }
 
@@ -78,12 +81,26 @@ class ProductController extends Controller
             'color'       => 'required|string',
             'category_id' => 'required',
             'image'       => 'nullable|string',
-            'stock'       => 'required|integer|min:0',
+            'stocks'      => 'nullable|array',
             'location'    => 'nullable|string',
             'sizes'       => 'nullable|array',
         ]);
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        foreach ($request->stocks ?? [] as $size => $stock) {
+            \App\Models\ProductStock::create([
+                'product_id' => $product->id,
+                'size'       => $size,
+                'stock'      => $stock ?? 0,
+            ]);
+        }
+        
+        $users = User::where('role', 'user')->get();
+
+        foreach ($users as $user) {
+            $user->notify(new NewProductNotification($product));
+        }
 
         return redirect()->route('products.index')->with('success', 'Product added!');
     }
@@ -106,17 +123,32 @@ class ProductController extends Controller
             'color'       => 'required|string',
             'category_id' => 'required',
             'image'       => 'nullable|string',
-            'stock'       => 'required|integer|min:0',
             'location'    => 'nullable|string',
             'sizes'       => 'nullable|array',
+            'stocks'      => 'nullable|array',
         ]);
 
-        $product = Product::findOrFail($id);
+        $product = Product::with('stocks')->findOrFail($id);
+
+        // update product utama
         $product->update($validated);
 
-        return redirect()->route('products.index')->with('success', 'Updated successfully!');
-    }
+        // reset stok lama
+        $product->stocks()->delete();
 
+        // simpan stok per size
+        foreach ($request->stocks ?? [] as $size => $stock) {
+            \App\Models\ProductStock::create([
+                'product_id' => $product->id,
+                'size'       => $size,
+                'stock'      => (int) $stock,
+            ]);
+        }
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Updated successfully!');
+    }
 }
 
 

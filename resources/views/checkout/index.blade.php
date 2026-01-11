@@ -8,13 +8,13 @@
     <form action="{{ route('checkout.store') }}" method="POST">
         @csrf
 
-        {{-- DATA PEMBELI --}}
+        {{-- Data user --}}
         <div class="card mb-4">
             <div class="card-body">
-                <h5>Data Penerima</h5>
+                <h5>{{ __('ui.receiver_data') }}</h5>
 
                 <div class="mb-3">
-                    <label>Nama Lengkap</label>
+                    <label>{{ __('ui.full_name') }}</label>
                     <input type="text" name="receiver_name" class="form-control" required>
                 </div>
 
@@ -25,32 +25,32 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label>Nomor Telepon</label>
+                        <label>{{ __('ui.telephone') }}</label>
                         <input type="text" name="phone" class="form-control" required>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label>Alamat Lengkap</label>
+                    <label>{{ __('ui.user_location') }}</label>
                     <textarea name="address" class="form-control" rows="3" required
                         placeholder="Jalan atau tempat spesifik"></textarea>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label>Kota / Kabupaten</label>
+                        <label>{{ __('ui.city') }}</label>
                         <input type="text" name="city" class="form-control" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label>Desa</label>
+                        <label>{{ __('ui.village') }}</label>
                         <input type="text" name="village" class="form-control" required>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label>Dusun</label>
+                        <label>{{ __('ui.hamlet') }}</label>
                         <input type="text" name="dusun" class="form-control" required>
                     </div>
 
@@ -70,7 +70,7 @@
 
         <div class="card mb-4">
             <div class="card-body">
-                <h5>Produk Dipesan</h5>
+                <h5>{{ __('ui.product') }}</h5>
 
                 @foreach ($cartItems as $cart)
                     <div class="d-flex align-items-center border-bottom py-3">
@@ -84,7 +84,7 @@
 
                         <div class="flex-grow-1">
                             <strong>{{ $cart->product->name }}</strong><br>
-                            <small>Ukuran: {{ $cart->size }}</small>
+                            <small>{{ __('ui.size') }}: {{ $cart->size }}</small>
                         </div>
 
                         <div class="text-end">
@@ -103,19 +103,18 @@
 
         <div class="card mb-4">
             <div class="card-body">
-                <h5>Pengiriman</h5>
+                <h5>{{ __('ui.shipping') }}</h5>
                 @livewire('princing-check')
             </div>
         </div>
         
         <div class="card mb-4">
             <div class="card-body">
-                <h5>Metode Pembayaran</h5>
+                <h5>{{ __('ui.payment_method') }}</h5>
 
                 <select name="payment_method" class="form-select" required>
                     <option value="bca">BCA (Bank Central Asia)</option>
                     <option value="bri">BRI (Bank Republik Indonesia)</option>
-                    <option value="cod">COD (Cash On Delivery)</option>
                     <option value="Paypall">Paypall</option>
                     <option value="Dana">Dana</option>
                 </select>
@@ -124,32 +123,32 @@
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <h6 class="fw-semibold mb-3">Ringkasan Pembayaran</h6>
+                <h6 class="fw-semibold mb-3">{{ __('ui.payment_summary') }}</h6>
 
                 <div class="d-flex justify-content-between">
-                    <span>Subtotal Produk</span>
+                    <span>{{ __('ui.subtotal') }} {{ __('ui.product') }}</span>
                     <strong>Rp {{ number_format($subtotal) }}</strong>
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <span>Ongkir</span>
+                    <span>{{ __('ui.shipping') }}</span>
                     <strong id="ongkir-text">Rp 0</strong>
                 </div>
 
                 <hr>
 
                 <div class="d-flex justify-content-between fs-5">
-                    <strong>Total Bayar</strong>
+                    <strong>{{ __('ui.total') }}</strong>
                     <strong id="total-text">Rp {{ number_format($subtotal) }}</strong>
                 </div>
 
                 <a href="{{ route('cart.index') }}"
                     class="btn btn-md btn-secondary mt-3">
-                    Batal
+                    {{ __('ui.cancel') }}
                 </a>
                 
                 <button class="btn btn-danger btn-md mt-3">
-                    Buat Pesanan
+                    {{ __('ui.create_order') }}
                 </button>
             </div>
         </div>

@@ -14,24 +14,24 @@
     @endif
 
     <div class="mb-3">
-        <label class="form-label">Nama produk</label>
+        <label class="form-label">{{ __('ui.filter_name') }}</label>
         <input type="text" name="name" class="form-control"
                value="{{ old('name', $product->name ?? '') }}" required>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Deskripsi</label>
+        <label class="form-label">{{ __('ui.description') }}</label>
         <textarea name="description" class="form-control" rows="3">{{ old('description', $product->description ?? '') }}</textarea>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Harga</label>
+        <label class="form-label">{{ __('ui.price') }}</label>
         <input type="number" name="price" class="form-control"
                value="{{ old('price', $product->price ?? '') }}" required>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Warna</label>
+        <label class="form-label">{{ __('ui.colour') }}</label>
         <input type="text" name="color" class="form-control"
                value="{{ old('color', $product->color ?? '') }}" required>
     </div>
@@ -42,7 +42,7 @@
     @endphp
 
     <div class="mb-3">
-        <label class="form-label">Ukuran</label>
+        <label class="form-label">{{ __('ui.size') }}</label>
         <div class="d-flex gap-3 flex-wrap">
             @foreach($sizes as $size)
                 <div class="form-check">
@@ -58,21 +58,42 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Stock</label>
-        <input type="number" name="stock" class="form-control"
-            value="{{ old('stock', $product->stock ?? 0) }}" required>
+        <label class="form-label fw-bold">{{ __('ui.stock') }}</label>
+
+        @php
+            $sizes = ['S','M','L','XL','XXL'];
+            $stocks = old(
+                'stocks',
+                isset($product)
+                    ? $product->stocks->pluck('stock','size')->toArray()
+                    : []
+            );
+        @endphp
+
+        <div class="row">
+            @foreach($sizes as $size)
+                <div class="col-md-2">
+                    <label class="form-label">{{ $size }}</label>
+                    <input
+                        type="number"
+                        name="stocks[{{ $size }}]"
+                        class="form-control"
+                        min="0"
+                        value="{{ $stocks[$size] ?? 0 }}"
+                    >
+                </div>
+            @endforeach
+        </div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Lokasi</label>
+        <label class="form-label">{{ __('ui.location') }}</label>
         <input type="text" name="location" class="form-control"
-            value="{{ old('location', $product->location ?? '') }}"
-            placeholder="Gudang / Rak / Toko">
+            value="{{ old('location', $product->location ?? '') }}">
     </div>
 
-    {{-- DROPDOWN KATEGORI --}}
     <div class="mb-3">
-        <label class="form-label">Kategori</label>
+        <label class="form-label">{{ __('ui.category') }}</label>
         <select name="category_id" class="form-select" required>
             @foreach($categories as $id => $name)
                 <option value="{{ $id }}"
@@ -84,17 +105,17 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Nama Gambar</label>
+        <label class="form-label">{{ __('ui.filter_name') }}</label>
         <input type="text" name="image" class="form-control"
                value="{{ old('image', $product->image ?? '') }}">
         <small class="text-muted">
-            Masukkan nama file gambar di folder <b>/public/img/</b>
+            {{ __('ui.img_file') }} <b>/public/img/</b>
         </small>
     </div>
 
     @if(isset($product) && $product->image)
         <div class="mb-3">
-            <label class="form-label">Gambar Saat Ini</label><br>
+            <label class="form-label">{{ __('ui.img_now') }}</label><br>
             <img src="{{ asset('img/' . $product->image) }}" width="200" class="border rounded">
         </div>
     @endif
@@ -103,7 +124,7 @@
         {{ isset($product) ? 'Update Product' : 'Create Product' }}
     </button>
 
-    <a href="{{ route('products.index') }}" class="btn btn-secondary">Back</a>
+    <a href="{{ route('products.index') }}" class="btn btn-secondary">{{ __('ui.back') }}</a>
 
 </form>
 

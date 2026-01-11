@@ -7,10 +7,25 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\OrderReturnController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('products.index');
 });
+
+/* LANGUAGE */
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['id', 'en'])) {
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('lang.switch');
+
+// NOTIFICATION
+Route::middleware('auth')->get('/notifications', 
+    [\App\Http\Controllers\NotificationController::class, 'index']
+)->name('notifications.index');
+
 
 /* AUTH */
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -30,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 });
 
+// CART
 Route::patch('/cart/{id}/toggle', [CartController::class, 'toggle'])
     ->name('cart.toggle');
 
@@ -39,7 +55,7 @@ Route::patch('/cart/{id}/quantity', [CartController::class, 'updateQuantity'])
 Route::put('/cart/{id}/size', [CartController::class, 'updateSize'])
     ->name('cart.updateSize');
 
-
+// CHECKOUT
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])
         ->name('checkout.index');
@@ -51,6 +67,7 @@ Route::middleware('auth')->group(function () {
         ->name('orders.index');
 });
 
+// ORDERS ACTION
 Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])
         ->name('orders.index');
@@ -63,6 +80,16 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/orders/{order}/buy-again', [OrderController::class, 'buyAgain'])
         ->name('orders.buyAgain');
+});
+
+// ORDERS RETURN
+Route::middleware('auth')->group(function () {
+
+    Route::get('/orders/{order}/return', [OrderReturnController::class, 'create'])
+        ->name('orders.return.create');
+
+    Route::post('/orders/{order}/return', [OrderReturnController::class, 'store'])
+        ->name('orders.return.store');
 });
 
 /* ADMIN */
@@ -81,4 +108,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
         ->name('admin.orders.updateStatus');
+
+    Route::patch('/returns/{orderReturn}/approve',
+        [AdminOrderController::class, 'approveReturn']
+    )->name('admin.returns.approve');
+
+    Route::patch('/returns/{orderReturn}/reject',
+        [AdminOrderController::class, 'rejectReturn']
+    )->name('admin.returns.reject');
 });

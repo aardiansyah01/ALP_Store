@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
+use App\Mail\OrderCreatedMail;
+use App\Notifications\OrderCreatedNotification;
+use App\Models\User;
 
 class CheckoutController extends Controller
 {
@@ -60,17 +64,15 @@ class CheckoutController extends Controller
                 ->with('error', 'Produk tidak valid');
         }
 
-        //subtotal produk
-        $subtotal = 0;
         $subtotal = $cartItems->sum(function ($item) {
             return $item->product->price * $item->quantity;
         });
 
-        //Ongkir
         $shippingCost = (int) $request->shipping_cost;
+        $total        = $subtotal + $shippingCost;
 
-        //Total
-        $total = $subtotal + $shippingCost;
+        /** @var \App\Models\Order|null $order */
+        $order = null;
 
         try {
 
@@ -81,8 +83,9 @@ class CheckoutController extends Controller
                 $shippingCost,
                 $total,
                 $cartItems,
+                &$order
             ) {
-                // dd($request->all());
+
                 $order = Order::create([
                     'user_id'          => $userId,
                     'receiver_name'    => $request->receiver_name,
@@ -104,38 +107,68 @@ class CheckoutController extends Controller
 
                 foreach ($cartItems as $item) {
 
-                    // 🔒 LOCK row product (anti stok minus)
-                    $product = \App\Models\Product::where('id', $item->product_id)
+                    $stock = \App\Models\ProductStock::where('product_id', $item->product_id)
+                        ->where('size', $item->size)
                         ->lockForUpdate()
                         ->first();
 
-                    // ❌ cek stok cukup atau tidak
-                    if ($product->stock < $item->quantity) {
+                    if (!$stock) {
+                        throw new \Exception("Stok size {$item->size} tidak ditemukan");
+                    }
+
+                    if ($stock->stock < $item->quantity) {
                         throw new \Exception(
-                            "Stok produk {$product->name} tidak mencukupi"
+                            "Stok {$item->product->name} size {$item->size} tidak mencukupi"
                         );
                     }
 
-                    // ⬇️ kurangi stok
-                    $product->decrement('stock', $item->quantity);
+                    $stock->decrement('stock', $item->quantity);
 
-                    // 🧾 simpan order item
                     OrderItem::create([
                         'order_id'   => $order->id,
                         'product_id' => $item->product_id,
                         'size'       => $item->size,
                         'qty'        => $item->quantity,
-                        'price'      => $product->price,
-                        'subtotal'   => $product->price * $item->quantity,
+                        'price'      => $item->product->price,
+                        'subtotal'   => $item->product->price * $item->quantity,
                     ]);
                 }
-                // hapus cart setelah checkout
+
                 Cart::whereIn('id', $cartItems->pluck('id'))->delete();
             });
+
         } catch (\Exception $e) {
             return redirect()->route('cart.index')
                 ->with('error', $e->getMessage());
         }
+
+        if (!$order) {
+            return redirect()->route('cart.index')
+                ->with('error', 'Gagal membuat pesanan');
+        }
+
+        // email
+        Mail::to($order->email)->send(new OrderCreatedMail($order));
+        
+        // notif
+        $request->user()->notify(
+            new OrderCreatedNotification(
+                isAdmin: false,
+                orderId: $order->id
+            )
+        );
+
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(
+                new OrderCreatedNotification(
+                    isAdmin: true,
+                    orderId: $order->id
+                )
+            );
+        }
+
         return redirect()->route('products.index')
             ->with('success', 'Pesanan berhasil dibuat');
     }

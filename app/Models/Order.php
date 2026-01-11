@@ -35,4 +35,14 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function return()
+    {
+        return $this->hasOne(OrderReturn::class);
+    }
+
+    public function returnRequest()
+    {
+        return $this->hasOne(\App\Models\OrderReturn::class);
+    }
 }

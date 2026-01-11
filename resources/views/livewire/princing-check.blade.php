@@ -2,20 +2,20 @@
     <div class="max-w-screen-md mx-auto">
 
         <div class="mb-3">
-            <label class="form-label fw-semibold">Kode Pos</label>
+            <label class="form-label fw-semibold">{{ __('ui.pos_code') }}</label>
 
             <div class="input-group">
                 <input
                     wire:model.defer="destination"
                     class="form-control"
-                    placeholder="Masukkan kode pos atau daerah"
+                    placeholder="{{ __('ui.enter_pos_code') }}"
                 >
                 <button
                     type="button"
                     wire:click="searchDestination"
                     class="btn btn-primary"
                 >
-                    Cari
+                    {{ __('ui.find') }}
                 </button>
             </div>
         </div>
@@ -24,7 +24,7 @@
         {{-- lopping lokasi --}}
         @if(!empty($resultDestinations))
             <div class="mb-4">
-                <h6 class="fw-semibold">Pilih Lokasi</h6>
+                <h6 class="fw-semibold">{{ __('ui.find_location') }}</h6>
 
                 @foreach($resultDestinations as $destination)
                 @php
@@ -40,7 +40,7 @@
                     <div class="d-flex justify-content-between">
                         <span>{{ $destination['label'] }}</span>
                         @if($isSelected)
-                            <span class="badge bg-light text-primary">Dipilih</span>
+                            <span class="badge bg-light text-primary">{{ __('ui.true') }}</span>
                         @endif
                     </div>
                 </button>
@@ -59,7 +59,7 @@
         {{-- looping harga --}}
         @if(!empty($prices))
             <div class="mt-4">
-                <h6 class="fw-semibold mb-3">Opsi Pengiriman</h6>
+                <h6 class="fw-semibold mb-3">{{ __('ui.shipping') }}</h6>
 
                 <div class="row g-2">
                     @foreach($prices as $price)
@@ -90,7 +90,7 @@
                                 <div class="fw-bold text-end">
                                     Rp {{ number_format($price['cost']) }}
                                     @if($isSelected)
-                                        <div class="text-primary small">✔ Dipilih</div>
+                                        <div class="text-primary small">✔ {{ __('ui.true') }}</div>
                                     @endif
                                 </div>
                             </div>
